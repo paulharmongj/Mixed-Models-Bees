@@ -1,0 +1,128 @@
+---
+title: 'HW 3: Sting data analysis'
+author: 'Paul Harmon and Steve Durtka'
+date: 'September 15, 2017'
+output:
+  word_document:
+    fig_height: 5
+    fig_width: 8
+  pdf_document:
+    fig_height: 3
+    fig_width: 5
+  html_document:
+    fig_height: 3
+    fig_width: 5
+---
+
+
+```{r, include=FALSE}
+# Don't delete this chunk if you are using the mosaic package
+# This loads the mosaic and dplyr packages
+if(!require(mosaic)){install.packages('mosaic')};library(mosaic)
+```
+
+```{r, include=FALSE}
+# Some customization.  You can alter or delete as desired (if you know what you are doing).
+
+# This changes the default colors in lattice plots.
+trellis.par.set(theme=theme.mosaic())  
+
+# knitr settings to control how R chunks work.
+if(!require(knitr)){install.packages('knitr')};library(knitr)
+opts_chunk$set(
+  tidy=FALSE,     # display code as typed
+  size="small"    # slightly smaller font for code
+)
+       
+```
+
+You must work in groups (2 to 4 students) or get an approved exemption.
+
+Read the paper "Honey bee sting pain index by body location" by Michael Smith, published in the _PeerJ_ in 2014 - posted on D2L along with a supplement they published.
+
+A slightly cleaned up version of the data set that was extracted from the supplemental materials is available on D2L. Note that coded the first forearm measurement each day as _forearm1_ and the second one I left as _forearm_. It contains contains all the observations including their calibration observations on the forearm each day. 
+
+```{r,warning=FALSE,message=F}
+library(readr)
+getwd()
+
+#reads in data as tibbles
+sd_fixed <- read_csv("data/stingdata_fixed.csv")
+sd_fixed$BLs <- sd_fixed$Body_Location 
+sd_fixed$BLs <- with(sd_fixed, reorder(Body_Location, Rating, median))
+
+```
+
+Now we will try to do a more complete analysis of the Body Location differences using these data. 
+
+
+1) __Describe the study design. Note the numbers of observations per round and day and number of days and any randomization that occured.__ 
+
+-discussion
+
+2) __With the design of this study, we could attempt to account for differences from day to day with a random effect. Why would we not expect too much day to day variation in the responses once we account for location in this study?__
+
+-discussion
+
+3)  __Fit a linear model that just contains the location of the sting as an explanatory variable (do not account for day) as coded in the _BLs_ variable. Perform an overall test for some difference in mean pain ratings across the locations and report the results in a sentence, carefully including all your evidence in the sentence - not in the R output. You will not match their results because they had a data coding issue in their analysis.__
+
+The results of the model indicate evidence against the null hypothesis that mean pain ratings are the same for all locations. Rather, an ANOVA F-test (with 25 and 94 df, respectively) suggests that bee stings in at least one different body location, on average, tend to be associated with different pain ratings than others. 
+```{r p3, include = TRUE}
+lm.1 <- lm(Rating~Body_Location,data = sd_fixed)
+summary(lm.1)
+
+anova(lm.1)
+
+```
+
+
+4)  __Discuss scope of inference for this test. In other words, address whether you can make causal inferences/not and how far the inferences can extend - and make your discussion specific to the problem at hand.__
+
+
+
+5) __Use the effects package to make a nice plot of the results from the model, using the `rotx` option to make the levels more readable such as with `plot(allEffects(modelname),rotx=90)`. Make sure you are using the `BLs` version of the explanatory variable when you fit the model above.__
+
+```{r,warning=FALSE,message=F}
+library(effects)
+
+```
+
+
+
+
+
+6) __Use the effects plot to discuss the mean pain ratings. This can be similar to how they discussed things in the paper.__  
+
+
+
+
+7) __We can also use the `plotmeans` function from `gplots` to explore data sets in one-way ANOVA situations. Compare these results to the results from the linear model.__
+
+```{r message=F,warning=F,fig.width=16,fig.height=5}
+require(gplots)
+plotmeans(Rating~BLs,data=sd_fixed,mean.labels=T, digits=1,barcol="red",col="grey")
+```
+
+
+
+8) __Make our regular panel of four diagnostic plots and discuss the assumptions based on these plots.__
+
+```{r,warning=FALSE,message=F}
+par(mfrow=c(2,2))
+```
+
+
+
+9) __Our regular diagnostic plots are a little misleading here. To make them better, we can "jitter" various aspects of the diagnostics to help us see if points are overplotting in the regular version of things. Use the following code to make a plot of the regular residuals vs jittered fitted values. Discuss the assumptions about the model that can be assessed using just this plot.__
+
+- Use something like `plot((residuals(MODELNAME))~jitter(fitted(MODELNAME)))`
+
+```{r,warning=FALSE,message=F}
+
+```
+
+
+
+
+
+
