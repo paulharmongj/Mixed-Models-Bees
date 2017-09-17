@@ -68,7 +68,7 @@ Now we will try to do a more complete analysis of the Body Location differences 
 
 The results of the model indicate evidence against the null hypothesis that mean pain ratings are the same for all locations. Rather, an ANOVA F-test (with 25 and 94 df, respectively) suggests that bee stings in at least one different body location, on average, tend to be associated with different pain ratings than others. 
 ```{r p3, include = TRUE}
-lm.1 <- lm(Rating~Body_Location,data = sd_fixed)
+lm.1 <- lm(Rating~BLs, data = sd_fixed)
 summary(lm.1)
 
 anova(lm.1)
@@ -78,29 +78,34 @@ anova(lm.1)
 
 4)  __Discuss scope of inference for this test. In other words, address whether you can make causal inferences/not and how far the inferences can extend - and make your discussion specific to the problem at hand.__
 
-
+The author does a nice job of noting that the scope of inference of this study is limited just to him - inferences on a non-random sample of 1 do not allow for generalization to a wider population. That being said, the body parts 
 
 5) __Use the effects package to make a nice plot of the results from the model, using the `rotx` option to make the levels more readable such as with `plot(allEffects(modelname),rotx=90)`. Make sure you are using the `BLs` version of the explanatory variable when you fit the model above.__
 
+The effects plot shows the estimated mean pain ratings for each body part (including the baseline body part, the middle toe tip). The plot is discussed in question 6. 
 ```{r,warning=FALSE,message=F}
 library(effects)
+plot(allEffects(lm.1), rotx = 85, main = "Body Location Effects Plot", color = c("orange","blue"))
 
 ```
 
 
 
-
-
 6) __Use the effects plot to discuss the mean pain ratings. This can be similar to how they discussed things in the paper.__  
 
-
+The effects plot shows the estimated mean pain ratings with standard errors plotted around each point estimate. The most painful locations on the body were the nostril and upper lip, as well as the genitalia-related areas of the body.  The least-painful parts of the body were the middle toe tip, skull, and upper arm, with estimated pain ratings between 1 and 3.  Pain ratings seem to be fairly consistent across the body as the standard errors for each location are not all that large (less than 1.0 on the pain rating scale on either side of the point estimate). 
 
 
 7) __We can also use the `plotmeans` function from `gplots` to explore data sets in one-way ANOVA situations. Compare these results to the results from the linear model.__
 
+These ratings allow for different levels of variation for each body part, as opposed to the linear model that imposes constant standard errors for each group. We can see that the Top of the head, back of the knee, nipple,skull, and middle finger tip have the most variation in mean pain ratings. The body parts with the smallest and largest average pain ratings appeared to have fairly consistent (narrow) mean pain ratings relative to the other ones mentioned. 
+
 ```{r message=F,warning=F,fig.width=16,fig.height=5}
 require(gplots)
-plotmeans(Rating~BLs,data=sd_fixed,mean.labels=T, digits=1,barcol="red",col="grey")
+par(mar = c(8,5,3,3))
+plotmeans(Rating~BLs,data=sd_fixed,mean.labels=T, digits=1,barcol="red",col="grey",xaxt = 'n',xlab = '',ylab = 'Mean Rating')
+axis(1,labels = unique(sd_fixed$BLs),at = 1:26,las = 2,cex = .5)
+title("Mean Pain Ratings in Each Group")
 ```
 
 
